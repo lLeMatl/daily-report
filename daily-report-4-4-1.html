@@ -1,0 +1,1045 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#EDF2F1" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1218" media="(prefers-color-scheme: dark)">
+<title>گزارش کار روزانه</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vazirmatn/33.003/Vazirmatn-font-face.css">
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#EDF2F1;
+  --surface:#FFFFFF;
+  --surface-2:#F4F8F7;
+  --field:#FFFFFF;
+  --ink:#0E1D1B;
+  --muted:#4A6361;
+  --placeholder:#5C7471;
+  --line:#D5E0DE;          /* جداکنندهٔ تزئینی */
+  --line-strong:#74908D;   /* مرز کنترل‌ها (کنتراست ≥ ۳:۱) */
+  --track:#C9D8D5;
+  --accent:#0A6B61;
+  --accent-hover:#085A52;
+  --accent-soft:#DAF0EB;
+  --on-accent:#FFFFFF;
+  --focus-ring:rgba(10,107,97,.28);
+  --ok:#12703F;
+  --warn:#8F5600;
+  --bad:#B42B2B;
+  --chat-bg:#E1ECE9;
+  --bubble:#CDEBDC;
+  --bubble-ink:#0F2A20;
+  --r:14px;
+  --r-sm:10px;
+  --font:"Vazirmatn","Vazir","Noto Sans Arabic",Tahoma,system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0F1218;
+    --surface:#161A22;
+    --surface-2:#1A1F29;
+    --field:#11151C;
+    --ink:#E7EBF2;
+    --muted:#9AA6BB;
+    --placeholder:#8591A6;
+    --line:#262C38;
+    --line-strong:#5B6679;
+    --track:#2B3342;
+    --accent:#4FD1C5;
+    --accent-hover:#6BDDD2;
+    --focus-ring:rgba(79,209,197,.32);
+    --accent-soft:#153A38;
+    --on-accent:#08201E;
+    --ok:#4CC38A;
+    --warn:#E3A93B;
+    --bad:#EF7B7B;
+    --chat-bg:#12171F;
+    --bubble:#1B453E;
+    --bubble-ink:#E8F6F0;
+  }
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:var(--font);font-size:16px;line-height:1.75;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+button,input,textarea,select{font:inherit;color:inherit}
+input,textarea{font-size:16px}
+button{cursor:pointer}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+::selection{background:var(--accent);color:var(--on-accent)}
+
+.wrap{max-width:1120px;margin:0 auto;padding:24px 16px 48px}
+
+/* ---------- hero ---------- */
+.hero{
+  display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px 24px;
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:16px 20px;margin-bottom:16px;
+}
+.hero-main{display:flex;flex-direction:column;gap:6px;min-width:0}
+.hero-top{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:32px}
+.hero-label{margin:0;color:var(--muted);font-size:.85rem}
+.today-btn{
+  border:1px solid var(--line-strong);background:transparent;border-radius:8px;
+  padding:0 12px;min-height:32px;font-size:.82rem;color:var(--accent);font-weight:600
+}
+.today-btn[hidden]{display:none}
+.today-btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.datebar{display:flex;align-items:center;gap:12px;min-width:0}
+.date-text{display:flex;flex-direction:column;min-width:0;line-height:1.4}
+.weekday{font-size:.88rem;font-weight:600;color:var(--accent)}
+h1{margin:0;min-width:0;font-size:clamp(1.25rem,3.6vw,1.6rem);font-weight:700;line-height:1.35}
+.round{
+  width:40px;height:40px;border-radius:10px;border:1px solid var(--line-strong);
+  background:var(--surface);color:var(--ink);display:grid;place-items:center;flex:none;padding:0;
+  transition:background .15s,border-color .15s;
+}
+.round:hover{border-color:var(--accent);background:var(--accent-soft)}
+.progress{display:flex;flex-direction:column;gap:8px;flex:0 1 240px;min-width:200px}
+.progress-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px;font-size:.85rem;color:var(--muted)}
+.progress-top b{font-size:1.1rem;font-weight:700;color:var(--ink)}
+.bar{height:6px;border-radius:99px;background:var(--track);overflow:hidden}
+.bar i{display:block;height:100%;width:0;background:var(--accent);border-radius:99px;transition:width .3s}
+
+/* ---------- layout ---------- */
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:20px;align-items:start}
+.formpane{display:flex;flex-direction:column;gap:16px;min-width:0}
+.preview{position:sticky;top:16px;display:flex;flex-direction:column;gap:12px;max-height:calc(100vh - 32px);min-width:0}
+
+/* ---------- sheets ---------- */
+.sheet{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:20px;min-width:0}
+.sheet h2{margin:0 0 2px;font-size:1.05rem;font-weight:700;line-height:1.5}
+.sheet .sub{margin:0 0 16px;color:var(--muted);font-size:.88rem;line-height:1.75}
+
+.fld{display:flex;flex-direction:column;gap:6px;min-width:0}
+.fld>span{font-size:.85rem;font-weight:500;color:var(--muted);line-height:1.4}
+input[type=text],input[type=time],textarea,input[type=search]{
+  display:block;width:100%;min-width:0;border:1px solid var(--line-strong);background:var(--field);
+  border-radius:var(--r-sm);padding:8px 12px;min-height:44px;
+  transition:border-color .15s, box-shadow .15s;
+  -webkit-appearance:none;appearance:none;
+}
+textarea{resize:vertical;min-height:84px;line-height:1.8}
+input:hover,textarea:hover{border-color:var(--accent)}
+input:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--focus-ring)}
+input[type=time]{text-align:center;direction:ltr;line-height:1.4}
+input[type=time]::-webkit-date-and-time-value{text-align:center}
+input[inputmode=numeric]{text-align:center;direction:ltr}
+::placeholder{color:var(--placeholder);opacity:1}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stack{display:flex;flex-direction:column;gap:16px}
+
+/* times */
+.timegrid{display:grid;grid-template-columns:1fr 1fr;gap:16px 12px}
+.pair{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px;align-items:end}
+.hint{grid-column:1/-1;margin:-8px 0 0;font-size:.85rem;font-weight:500;color:var(--muted)}
+.hint:empty{display:none}
+.hint.late{color:var(--warn)}
+.hint.good{color:var(--ok)}
+
+/* subjects */
+.subjects{display:flex;flex-direction:column;gap:12px}
+.add-wrap{margin-top:12px}
+.subj{
+  position:relative;overflow:hidden;
+  background:var(--surface-2);border:1px solid var(--line);
+  border-radius:12px;padding:16px;
+  display:flex;flex-direction:column;gap:12px;min-width:0;
+}
+.subj::before{
+  content:"";position:absolute;inset-block:0;inset-inline-start:0;width:4px;background:transparent;
+  transition:background .2s;
+}
+.subj[data-dl=yes]::before{background:var(--ok)}
+.subj[data-dl=part]::before{background:var(--warn)}
+.subj[data-dl=no]::before{background:var(--bad)}
+.subj-head{display:flex;align-items:center;gap:8px;min-width:0}
+.subj-title{font-weight:700;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pct{flex:0 1 auto;max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:.82rem;font-weight:600;padding:1px 10px;border-radius:99px;background:var(--accent-soft);color:var(--ink)}
+.pct:empty{display:none}
+.pct.warn{background:transparent;color:var(--bad);border:1px solid var(--bad)}
+.mini{
+  width:36px;height:36px;border-radius:var(--r-sm);border:1px solid transparent;background:transparent;
+  display:grid;place-items:center;color:var(--muted);flex:none;padding:0
+}
+.mini:hover{background:var(--surface);border-color:var(--line-strong);color:var(--ink)}
+.mini.del:hover{color:var(--bad);border-color:var(--bad)}
+.suffix{position:relative}
+.suffix input{padding-inline-end:40px}
+.suffix::after{
+  content:attr(data-s);position:absolute;inset-inline-end:12px;top:50%;
+  transform:translateY(-50%);color:var(--muted);font-size:.85rem;pointer-events:none
+}
+
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:var(--r-sm);border:1px solid var(--line-strong);background:var(--surface);
+  padding:8px 16px;min-height:44px;font-weight:600;font-size:.92rem;white-space:nowrap;
+  transition:transform .1s,background .15s,border-color .15s
+}
+.btn:hover{border-color:var(--accent)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
+.btn.primary:hover{background:var(--accent-hover);border-color:var(--accent-hover)}
+.btn.dashed{border-style:dashed;width:100%;background:transparent;color:var(--ink)}
+.btn.dashed:hover{color:var(--ink);background:var(--accent-soft)}
+.btn.danger{border-color:var(--bad);color:var(--bad)}
+.btn.small{min-height:40px;padding:4px 16px;font-size:.85rem;font-weight:500;color:var(--muted)}
+.btn.small.danger{color:var(--bad)}
+
+/* segmented */
+.seg{display:flex;gap:6px}
+.seg[data-f=deadline],.seg[data-sk=deadline]{display:grid;grid-template-columns:repeat(3,1fr)}
+.seg button{
+  min-width:0;border:1px solid var(--line-strong);background:var(--field);
+  border-radius:var(--r-sm);padding:6px 4px;min-height:44px;font-size:.88rem;line-height:1.4;
+  transition:background .15s,border-color .15s,color .15s
+}
+.seg button:hover{border-color:var(--accent)}
+.seg button[aria-pressed=true]{color:#fff;border-color:transparent;font-weight:700}
+.seg button[aria-pressed=true][data-v=yes],.seg button[aria-pressed=true][data-v=done]{background:var(--ok)}
+.seg button[aria-pressed=true][data-v=part]{background:var(--warn)}
+.seg button[aria-pressed=true][data-v=no],.seg button[aria-pressed=true][data-v=miss]{background:var(--bad)}
+@media (prefers-color-scheme: dark){
+  .seg button[aria-pressed=true]{color:#0B1320}
+}
+.fld-label{font-size:.85rem;font-weight:500;color:var(--muted);margin-bottom:6px;display:block;line-height:1.4}
+
+/* routine */
+.routine{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px}
+.routine:empty{display:none}
+.routine li{
+  display:flex;align-items:center;gap:8px;background:var(--surface-2);
+  border:1px solid var(--line);border-radius:12px;padding:6px;min-width:0
+}
+.routine .lbl{flex:1;min-width:0;padding-inline-start:8px;overflow-wrap:anywhere}
+.routine .seg{flex:none}
+.routine .seg button{width:42px;min-height:36px;padding:2px}
+.add-row{display:flex;gap:8px}
+.add-row input{flex:1}
+
+/* summary */
+.stats{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+.stat{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--surface-2);border:1px solid var(--line);border-radius:12px;padding:10px 14px;min-width:0}
+.stat b{display:block;font-size:1.1rem;font-weight:700;line-height:1.6;overflow-wrap:anywhere}
+.stat span{display:block;font-size:.88rem;color:var(--muted);line-height:1.5}
+
+/* group panels inside a subject card */
+.grp{
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;
+  padding:12px 14px;display:flex;flex-direction:column;gap:12px;min-width:0
+}
+.grp-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-height:26px;min-width:0}
+.grp-title{margin:0;font-size:.92rem;font-weight:700;color:var(--ink);line-height:1.4}
+
+/* duration (مدت مطالعه / تکنولوژی): one row, label + value on the start side, input on the end */
+.dur{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;min-width:0;
+  background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:10px 14px
+}
+#techSlot .dur{background:var(--surface-2)}
+.dur-text{display:flex;flex-direction:column;min-width:0;line-height:1.5}
+.dur-text .fld-label{margin:0;font-size:.92rem;font-weight:700;color:var(--ink)}
+.dur-read{margin:0;font-size:.78rem;font-weight:600;color:var(--accent);white-space:nowrap}
+.dur-read:empty{display:none}
+.dur-read.warn{color:var(--warn)}
+.dur .suffix{flex:0 0 120px}
+.suffix.wide input{padding-inline:10px;padding-left:54px}
+
+/* week tests */
+.week{background:var(--surface-2);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.week-head{font-weight:700;font-size:.92rem;line-height:1.4;padding:12px 14px}
+.week-eq{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);background:var(--surface)}
+.week-cell{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:12px 8px;min-width:0}
+.week-cell+.week-cell{border-inline-start:1px solid var(--line)}
+.week-cell>span{font-size:.8rem;color:var(--muted);line-height:1.3;text-align:center}
+.week-cell>b{font-size:1.4rem;font-weight:700;line-height:1.4}
+.week-cell.total{background:var(--accent-soft)}
+.week-cell input{width:100%;max-width:84px;min-height:40px;padding-inline:6px}
+.week-note{margin:0;padding:10px 14px;font-size:.8rem;color:var(--muted);line-height:1.7;border-top:1px solid var(--line)}
+.week-note:empty{display:none}
+.range-row{display:flex;align-items:center;gap:12px}
+.range-row input[type=range]{flex:1;min-width:0;accent-color:var(--accent);height:32px}
+.range-row input.unset{opacity:.55}
+.qv{flex:none;min-width:60px;text-align:center;padding:2px 10px;border-radius:var(--r-sm);background:var(--surface-2);border:1px solid var(--line);font-weight:700}
+
+.qlist{list-style:none;margin:0 0 12px;padding:0;display:flex;flex-direction:column;gap:8px}
+.qlist:empty{display:none}
+.qlist li{display:flex;gap:8px;align-items:flex-start}
+.qlist textarea{flex:1;min-height:64px}
+.qlist .mini{margin-top:4px}
+
+/* ---------- preview ---------- */
+.preview-head{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.preview-head h2{margin:0;font-size:1rem;font-weight:700}
+.switch{position:relative;display:inline-flex;align-items:center;gap:8px;font-size:.88rem;color:var(--muted);cursor:pointer;white-space:nowrap}
+.switch input{position:absolute;opacity:0;pointer-events:none;width:1px;height:1px}
+.switch i{width:36px;height:22px;border-radius:99px;background:var(--line-strong);position:relative;transition:background .2s;flex:none}
+.switch i::after{content:"";position:absolute;top:3px;inset-inline-start:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:inset-inline-start .2s}
+.switch input:checked + i{background:var(--accent)}
+.switch input:checked + i::after{inset-inline-start:17px}
+.switch input:focus-visible + i{outline:2px solid var(--accent);outline-offset:2px}
+
+.chat{
+  background:var(--chat-bg);border-radius:var(--r);padding:14px;overflow:auto;flex:1 1 auto;min-height:160px;
+  border:1px solid var(--line)
+}
+.bubble{
+  background:var(--bubble);color:var(--bubble-ink);
+  border-radius:16px 16px 4px 16px;padding:12px 14px;
+  white-space:pre-wrap;overflow-wrap:anywhere;font-size:.94rem;line-height:1.9;
+}
+.bubble-meta{margin-top:6px;font-size:.78rem;color:var(--muted);text-align:start}
+.actions{display:flex;gap:8px}
+.actions .btn{flex:1}
+.reset-row{display:flex;justify-content:center}
+
+/* ---------- tabbar (mobile) ---------- */
+.tabbar{
+  display:none;position:fixed;inset-inline:0;bottom:0;z-index:20;
+  background:var(--surface);border-top:1px solid var(--line);
+  padding:10px 12px calc(10px + env(safe-area-inset-bottom));gap:8px;
+}
+.tab{
+  flex:1;border:1px solid var(--line-strong);background:var(--field);border-radius:var(--r-sm);
+  min-height:48px;font-weight:600;font-size:.92rem
+}
+.tab[aria-selected=true]{background:var(--accent-soft);border-color:var(--accent);color:var(--ink);font-weight:700}
+.tabbar .btn{flex:1.2;min-height:48px}
+
+.toast{
+  position:fixed;left:50%;bottom:92px;transform:translate(-50%,20px);
+  background:var(--ink);color:var(--bg);padding:8px 18px;border-radius:99px;font-size:.88rem;
+  font-weight:600;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:50;
+  max-width:calc(100vw - 32px);text-align:center
+}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width: 980px){
+  .wrap{padding-bottom:110px}
+  .layout{grid-template-columns:1fr}
+  .preview{position:static;max-height:none}
+  .tabbar{display:flex}
+  body[data-view=form] .preview{display:none}
+  body[data-view=out] .formpane{display:none}
+  .chat{min-height:320px}
+  .hero-main{width:100%}
+  .datebar{justify-content:space-between}
+  .date-text{flex:1;align-items:center;text-align:center}
+  .progress{flex:1 1 100%;padding-top:14px;border-top:1px solid var(--line)}
+}
+@media (max-width: 520px){
+  .wrap{padding-inline:12px;padding-top:16px}
+  .hero{padding:14px 16px}
+  .sheet{padding:16px}
+  .subj{padding:14px}
+  .grid2:not(.keep){grid-template-columns:1fr}
+}
+@media (prefers-reduced-motion: reduce){
+  *{transition:none !important;animation:none !important}
+}
+</style>
+</head>
+<body data-view="form">
+<div class="wrap">
+
+  <header class="hero">
+    <div class="hero-main">
+      <div class="hero-top">
+        <p class="hero-label">گزارش کار روزانه</p>
+        <button class="today-btn" id="todayBtn" type="button" data-act="day-today" hidden>بازگشت به امروز</button>
+      </div>
+      <div class="datebar">
+        <button class="round" type="button" data-act="day-prev" aria-label="روز قبل">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 6 15 12 9 18"/></svg>
+        </button>
+        <div class="date-text">
+          <span class="weekday" id="dateWeek"></span>
+          <h1 id="dateTitle"></h1>
+        </div>
+        <button class="round" type="button" data-act="day-next" aria-label="روز بعد">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 6 9 12 15 18"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="progress" aria-live="polite">
+      <div class="progress-top"><span>پیشرفت گزارش</span><span><b id="progPct">۰٪</b> · <span id="progText"></span></span></div>
+      <div class="bar"><i id="progBar"></i></div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <!-- ================= FORM ================= -->
+    <main class="formpane" id="formPane">
+
+      <section class="sheet" aria-labelledby="h-time">
+        <h2 id="h-time">زمان‌بندی روز</h2>
+        <p class="sub">ساعت واقعی را کنار ساعت برنامه بنویس تا اختلافش خودکار محاسبه شود.</p>
+        <div class="timegrid">
+          <label class="fld wide"><span>ساعت بیداری</span><input type="time" data-f="wake"></label>
+          <div class="pair">
+            <label class="fld"><span>شروع مطالعه</span><input type="time" data-f="start"></label>
+            <label class="fld"><span>شروع طبق برنامه</span><input type="time" data-f="pStart"></label>
+          </div>
+          <p class="hint" id="hintStart"></p>
+          <div class="pair">
+            <label class="fld"><span>پایان مطالعه</span><input type="time" data-f="end"></label>
+            <label class="fld"><span>پایان طبق برنامه</span><input type="time" data-f="pEnd"></label>
+          </div>
+          <p class="hint" id="hintEnd"></p>
+        </div>
+      </section>
+
+      <section class="sheet" aria-labelledby="h-subj">
+        <h2 id="h-subj">درس‌های امروز</h2>
+        <p class="sub">برای هر درس یک کارت بساز. رنگ لبهٔ کارت نشان‌دهندهٔ عمل به ددلاین است.</p>
+        <div class="subjects" id="subjects"></div>
+        <div class="add-wrap">
+          <button class="btn dashed" type="button" data-act="add-subj">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            افزودن درس
+          </button>
+        </div>
+      </section>
+
+      <section class="sheet" aria-labelledby="h-un">
+        <h2 id="h-un">تایم‌های انجام‌نشده</h2>
+        <p class="sub">برای قرار گرفتن در برنامهٔ هفتهٔ بعد، حتماً این بخش را پر کن.</p>
+        <textarea data-f="unfinished" placeholder="مثلاً: ۲ ساعت شیمی، ۱ ساعت مرور ادبیات"></textarea>
+      </section>
+
+      <section class="sheet" aria-labelledby="h-rt">
+        <h2 id="h-rt">روتین</h2>
+        <p class="sub">برای هر مورد ✓ یا ✗ بزن. موردی که بی‌علامت بماند در خروجی نمی‌آید. لیست روتین ذخیره می‌شود.</p>
+        <ul class="routine" id="routine"></ul>
+        <div class="add-row">
+          <input type="text" id="rtNew" placeholder="مورد جدید روتین، مثلاً ورزش" aria-label="مورد جدید روتین" enterkeyhint="done">
+          <button class="btn" type="button" data-act="add-routine">افزودن</button>
+        </div>
+      </section>
+
+      <section class="sheet" aria-labelledby="h-sum">
+        <h2 id="h-sum">جمع‌بندی روز</h2>
+        <p class="sub">مجموع‌ها خودکار از کارت درس‌ها حساب می‌شوند.</p>
+        <div class="stats" aria-live="polite">
+          <div class="stat"><span>مجموع مطالعهٔ امروز</span><b id="stStudy">—</b></div>
+        </div>
+        <div class="stack">
+          <div class="week" aria-live="polite">
+            <div class="week-head">تست‌های هفته</div>
+            <div class="week-eq">
+              <label class="week-cell"><span>تا قبل از امروز</span><input type="text" inputmode="numeric" data-num data-f="weekPrev" placeholder="۰"></label>
+              <div class="week-cell"><span>امروز</span><b id="wkToday">۰</b></div>
+              <div class="week-cell total"><span>جمع هفته</span><b id="stWeek">—</b></div>
+            </div>
+            <p class="week-note" id="weekNote"></p>
+          </div>
+          <div id="techSlot"></div>
+          <div>
+            <span class="fld-label">عمل به ددلاین‌بندی کل روز</span>
+            <div class="seg" data-f="deadline" role="group" aria-label="عمل به ددلاین‌بندی کل روز">
+              <button type="button" data-v="yes" aria-pressed="false">✅ کامل</button>
+              <button type="button" data-v="part" aria-pressed="false">⚠️ نسبی</button>
+              <button type="button" data-v="no" aria-pressed="false">❌ انجام نشد</button>
+            </div>
+          </div>
+          <label class="fld"><span>ضعف‌های درسی</span><textarea data-f="weak" placeholder="مباحثی که امروز اذیتت کردند"></textarea></label>
+          <div>
+            <span class="fld-label">کیفیت مطالعه</span>
+            <div class="range-row">
+              <input type="range" min="0" max="100" step="5" value="70" data-f="quality" class="unset" aria-label="کیفیت مطالعه">
+              <span class="qv" id="qv">—</span>
+            </div>
+          </div>
+          <label class="fld"><span>درصد تست آزمونی</span>
+            <div class="suffix" data-s="٪"><input type="text" inputmode="numeric" data-num data-f="exam" placeholder="اگر آزمون دادی"></div>
+          </label>
+        </div>
+      </section>
+
+      <section class="sheet" aria-labelledby="h-q">
+        <h2 id="h-q">سؤالات و ابهامات</h2>
+        <p class="sub">هر سؤال با شماره در خروجی می‌آید.</p>
+        <ol class="qlist" id="qlist"></ol>
+        <button class="btn dashed" type="button" data-act="add-q">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+          افزودن سؤال
+        </button>
+      </section>
+
+      <div class="reset-row form-reset">
+        <button class="btn small" type="button" data-act="reset">ریست فرم</button>
+      </div>
+
+    </main>
+
+    <!-- ================= PREVIEW ================= -->
+    <aside class="preview" id="previewPane">
+      <div class="preview-head">
+        <h2>خروجی آمادهٔ ارسال</h2>
+        <label class="switch"><input type="checkbox" data-f="fa" checked><i></i>ارقام فارسی</label>
+      </div>
+      <div class="chat">
+        <div class="bubble" id="out" dir="rtl"></div>
+        <div class="bubble-meta" id="outMeta"></div>
+      </div>
+      <div class="actions">
+        <button class="btn primary" type="button" data-act="copy">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>
+          کپی گزارش
+        </button>
+        <button class="btn" type="button" data-act="share" id="shareBtn" hidden>اشتراک‌گذاری</button>
+      </div>
+      <div class="reset-row">
+        <button class="btn small" type="button" data-act="reset" id="resetBtn">ریست فرم</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<nav class="tabbar" aria-label="نمای صفحه">
+  <button class="tab" type="button" role="tab" data-act="tab" data-view="form" aria-selected="true">پر کردن</button>
+  <button class="tab" type="button" role="tab" data-act="tab" data-view="out" aria-selected="false">خروجی</button>
+  <button class="btn primary" type="button" data-act="copy">کپی گزارش</button>
+</nav>
+
+<datalist id="subjList">
+  <option value="ریاضی"><option value="هندسه"><option value="حسابان"><option value="آمار و احتمال"><option value="گسسته">
+  <option value="فیزیک"><option value="شیمی"><option value="زیست‌شناسی"><option value="زمین‌شناسی">
+  <option value="ادبیات"><option value="عربی"><option value="دین و زندگی"><option value="زبان انگلیسی">
+  <option value="فلسفه و منطق"><option value="تاریخ"><option value="جغرافیا"><option value="روانشناسی"><option value="اقتصاد"><option value="جامعه‌شناسی">
+</datalist>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ---------- helpers ---------- */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
+const uid = () => Math.random().toString(36).slice(2, 9);
+const FA = '۰۱۲۳۴۵۶۷۸۹';
+const AR = '٠١٢٣٤٥٦٧٨٩';
+const toFa = s => String(s).replace(/\d/g, d => FA[d]);
+const norm = s => String(s ?? '').replace(/[۰-۹]/g, d => FA.indexOf(d)).replace(/[٠-٩]/g, d => AR.indexOf(d));
+const num = v => parseInt(norm(v), 10) || 0;
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const KEY = 'daily-report-v1';
+
+const SEP = '· · · • • • • • • • • • • · · ·';
+const SPARK = '\u2728\uFE0F';
+const KC = n => n <= 9 ? `${n}\uFE0F\u20E3` : (n === 10 ? '🔟' : String(n));
+const DL = { yes: '✅ کامل', part: '⚠️ نسبی', no: '❌ انجام نشد' };
+
+const todayISO = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`; };
+const fromISO  = iso => { const [y,m,d] = iso.split('-').map(Number); return new Date(y, m-1, d, 12); };
+const toISO    = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`;
+const addDays  = (iso, n) => { const d = fromISO(iso); d.setDate(d.getDate()+n); return toISO(d); };
+const weekStart = iso => { const d = fromISO(iso); d.setDate(d.getDate() - ((d.getDay()+1) % 7)); return toISO(d); }; // هفته از شنبه شروع می‌شود
+const dayGap = (a, b) => Math.round((fromISO(b) - fromISO(a)) / 86400000);
+
+const WEEKDAYS = ['یکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'];
+const JMONTHS = ['فروردین','اردیبهشت','خرداد','تیر','مرداد','شهریور','مهر','آبان','آذر','دی','بهمن','اسفند'];
+function g2j(gy, gm, gd) {
+  const gdm = [0,31,59,90,120,151,181,212,243,273,304,334];
+  let jy = gy > 1600 ? 979 : 0;
+  gy -= gy > 1600 ? 1600 : 621;
+  const gy2 = gm > 2 ? gy + 1 : gy;
+  let days = 365 * gy + Math.floor((gy2 + 3) / 4) - Math.floor((gy2 + 99) / 100) + Math.floor((gy2 + 399) / 400) - 80 + gd + gdm[gm - 1];
+  jy += 33 * Math.floor(days / 12053); days %= 12053;
+  jy += 4 * Math.floor(days / 1461); days %= 1461;
+  if (days > 365) { jy += Math.floor((days - 1) / 365); days = (days - 1) % 365; }
+  const jm = days < 186 ? 1 + Math.floor(days / 31) : 7 + Math.floor((days - 186) / 30);
+  const jd = 1 + (days < 186 ? days % 31 : (days - 186) % 30);
+  return [jy, jm, jd];
+}
+const dateParts = iso => {
+  const d = fromISO(iso);
+  const [jy, jm, jd] = g2j(d.getFullYear(), d.getMonth() + 1, d.getDate());
+  return [WEEKDAYS[d.getDay()], toFa(`${jd} ${JMONTHS[jm - 1]} ${jy}`)];
+};
+const dateText = iso => dateParts(iso).join(' ');
+
+/* ---------- state ---------- */
+const newSubject = (o = {}) => ({ id: uid(), name:'', topic:'', tests:'', correct:'', dur:'', source:'', deadline:'', ...o });
+const freshState = (routine = []) => ({
+  dateISO: todayISO(), fa: true,
+  wake:'', start:'', pStart:'', end:'', pEnd:'',
+  subjects: [newSubject()], unfinished:'',
+  routine, techDur:'', weekPrev:'', weekSrc:'',
+  deadline:'', weak:'', quality:'', exam:'', questions: []
+});
+const sumTests = s => (s.subjects || []).reduce((a, x) => a + num(x.tests), 0);
+
+const load = () => { try { const r = localStorage.getItem(KEY); return r ? JSON.parse(r) : null; } catch { return null; } };
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {} };
+
+/* مهاجرت داده‌های قدیمی: ساعت+دقیقه ← یک عدد (دقیقه) */
+const migrate = s => {
+  if (!s) return s;
+  const has = v => String(v ?? '').trim() !== '';
+  s.subjects = (s.subjects || []).map(x => {
+    if (x.dur !== undefined) return x;
+    const { h, m, ...rest } = x;
+    return { ...rest, dur: (has(h) || has(m)) ? String(num(h) * 60 + num(m)) : '' };
+  });
+  if (s.techDur === undefined) {
+    s.techDur = (has(s.techH) || has(s.techM)) ? String(num(s.techH) * 60 + num(s.techM)) : '';
+    delete s.techH; delete s.techM;
+  }
+  return s;
+};
+
+let carryNotice = false;
+let state = (() => {
+  const saved = migrate(load());
+  const today = todayISO();
+  if (!saved || !saved.dateISO) return freshState();
+  if (dayGap(saved.dateISO, today) <= 0) return { ...freshState(), ...saved, dateISO: today };
+  // روز جدید: روتین حفظ می‌شود و تست‌های هفته منتقل می‌شود
+  const routine = (saved.routine || []).map(r => ({ ...r, state: '' }));
+  const fresh = freshState(routine);
+  fresh.fa = saved.fa !== false;
+  if (weekStart(saved.dateISO) === weekStart(today)) {
+    const carry = num(saved.weekPrev) + sumTests(saved);
+    if (carry > 0) { fresh.weekPrev = String(carry); fresh.weekSrc = 'carry'; carryNotice = true; }
+  }
+  return fresh;
+})();
+
+/* ---------- formatting ---------- */
+const O = v => state.fa ? toFa(norm(v)) : norm(v);
+const fmtMin = total => {
+  const h = Math.floor(total / 60), m = total % 60;
+  if (h && m) return `${h} ساعت و ${m} دقیقه`;
+  if (h) return `${h} ساعت`;
+  return `${m} دقیقه`;
+};
+const hasV = v => String(v ?? '').trim() !== '';
+const toMin = t => { if (!t) return null; const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+
+/* ---------- report text ---------- */
+function buildReport() {
+  const s = state, L = [];
+  const field = (label, text) => {
+    const t = String(text ?? '').trim();
+    if (t.includes('\n')) return [`${label} :`, ...t.split('\n').map(x => O(x.trim())).filter(Boolean)];
+    return [`${label} : ${O(t)}`];
+  };
+
+  L.push(`${SPARK} گزارش کار امروز ( ${O(dateText(s.dateISO))} )`, '');
+  L.push(`🥱 ساعت بیداری : ${O(s.wake)}`);
+  L.push(`💥 ساعت استارت مطالعه : ${O(s.start)}`);
+  L.push(`🕕ساعت استارت مطالعه مندرج در برنامه: ${O(s.pStart)}`);
+  L.push(`👨‍🏫 ساعت پایان مطالعه: ${O(s.end)}`);
+  L.push(`🕘 ساعت پایان مطالعه مندرج در برنامه : ${O(s.pEnd)}`, '');
+  L.push(SPARK.repeat(13), '');
+
+  const isEmpty = x => !x.name && !x.topic && !x.tests && !x.correct && !hasV(x.dur) && !x.source && !x.deadline;
+  let list = s.subjects.filter(x => !isEmpty(x));
+  if (!list.length) list = [newSubject()];
+  list.forEach(x => {
+    const tests = String(x.tests).trim() !== ''
+      ? `${O(x.tests)}${String(x.correct).trim() !== '' ? ` (${O(x.correct)})` : ''}` : '';
+    const time = hasV(x.dur) ? O(fmtMin(num(x.dur))) : '';
+    L.push(`${KC(1)} نام درس : ${O(x.name)}`);
+    L.push(`${KC(2)} مبحث : ${O(x.topic)}`);
+    L.push(`${KC(3)} تعداد تست : ${tests}`);
+    L.push(`${KC(4)} ساعت مطالعه : ${time}`);
+    L.push(`${KC(5)} منبع تست : ${O(x.source)}`);
+    L.push(`${KC(6)} عمل به ددلاین بندی : ${DL[x.deadline] || ''}`, '', SEP, '');
+  });
+
+  L.push(...field('⛔️ تایم های انجام نشده', s.unfinished), '');
+  L.push('💎 روتین :');
+  s.routine.forEach(r => {
+    if (r.state === 'done') L.push(`✅ ${O(r.label)}`);
+    else if (r.state === 'miss') L.push(`❌ ${O(r.label)}`);
+  });
+  L.push('', SEP, '');
+
+  const totalMin = s.subjects.reduce((a, x) => a + num(x.dur), 0);
+  const totalTests = sumTests(s);
+  const weekTotal = (String(s.weekPrev).trim() !== '' || totalTests > 0) ? String(num(s.weekPrev) + totalTests) : '';
+  L.push(`📱میزان استفاده از تکنولوژی : ${hasV(s.techDur) ? O(fmtMin(num(s.techDur))) : ''}`);
+  L.push(`🔝 مجموع ساعت مطالعه : ${totalMin > 0 ? O(fmtMin(totalMin)) : ''}`);
+  L.push(`🔝 مجموع تعداد تست : ${totalTests > 0 ? O(totalTests) : ''}`);
+  L.push(`🔚 تعداد مجموع تست های هفته تا به امروز : ${O(weekTotal)}`, '', SEP, '');
+
+  L.push(`☑️ عمل به ددلاین بندی کل روز  : ${DL[s.deadline] || ''}`);
+  L.push(...field('❌ ضعف‌های‌ درسی', s.weak));
+  L.push(`✔️ کیفیت مطالعه : ${s.quality !== '' ? O(s.quality) + '%' : ''}`);
+  L.push(`⚠️ درصد تست آزمونی : ${String(s.exam).trim() !== '' ? O(s.exam) + '%' : ''}`, '', SEP, '');
+
+  L.push('⁉️ سوالات و ابهامات :');
+  s.questions.map(q => String(q.text).trim()).filter(Boolean).forEach((q, i) => {
+    const lines = q.split('\n').map(x => O(x.trim())).filter(Boolean);
+    L.push(`${KC(i + 1)} ${lines.join(' ')}`);
+  });
+
+  return L.map(l => l.replace(/[ \t]+$/, '')).join('\n').replace(/\n{3,}/g, '\n\n').trim();
+}
+
+/* ---------- icons ---------- */
+const ico = {
+  trash: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14M10 11v5M14 11v5"/></svg>',
+  dup:   '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15V5a2 2 0 0 1 2-2h10"/></svg>'
+};
+
+/* ---------- duration control ---------- */
+const durHTML = (attr, label, value = '') => `
+  <div class="dur">
+    <div class="dur-text">
+      <span class="fld-label">${label}</span>
+      <p class="dur-read" aria-live="polite"></p>
+    </div>
+    <div class="suffix wide" data-s="دقیقه"><input type="text" inputmode="numeric" data-num data-max="1440" ${attr} value="${esc(value)}" placeholder="۰" aria-label="${label} (دقیقه)"></div>
+  </div>`;
+
+/* ---------- render: subjects ---------- */
+function subjectHTML(x, i) {
+  return `
+  <article class="subj" data-sid="${x.id}" data-dl="${x.deadline}">
+    <div class="subj-head">
+      <span class="subj-title" data-title>${esc(x.name) || 'درس ' + toFa(i + 1)}</span>
+      <button class="mini" type="button" data-act="dup-subj" title="درس مشابه (نام و منبع کپی می‌شود)" aria-label="درس مشابه">${ico.dup}</button>
+      <button class="mini del" type="button" data-act="del-subj" title="حذف درس" aria-label="حذف درس">${ico.trash}</button>
+    </div>
+    <div class="grid2">
+      <label class="fld"><span>نام درس</span><input type="text" list="subjList" data-sk="name" value="${esc(x.name)}" placeholder="مثلاً فیزیک"></label>
+      <label class="fld"><span>مبحث</span><input type="text" data-sk="topic" value="${esc(x.topic)}" placeholder="مثلاً حرکت‌شناسی"></label>
+    </div>
+    <div class="grp">
+      <div class="grp-head"><span class="grp-title">تست‌ها</span><span class="pct" data-pct></span></div>
+      <div class="grid2 keep">
+        <label class="fld"><span>تعداد تست</span><input type="text" inputmode="numeric" data-num data-sk="tests" value="${esc(x.tests)}" placeholder="۰"></label>
+        <label class="fld"><span>تعداد درست‌ها</span><input type="text" inputmode="numeric" data-num data-sk="correct" value="${esc(x.correct)}" placeholder="۰"></label>
+      </div>
+      <label class="fld"><span>منبع تست</span><input type="text" data-sk="source" value="${esc(x.source)}" placeholder="مثلاً گاج، قلم‌چی، خیلی سبز"></label>
+    </div>
+    ${durHTML('data-sk="dur"', 'مدت مطالعه', x.dur)}
+    <div>
+      <span class="fld-label">عمل به ددلاین‌بندی</span>
+      <div class="seg" data-sk="deadline" role="group" aria-label="عمل به ددلاین‌بندی">
+        ${['yes','part','no'].map(v => `<button type="button" data-v="${v}" aria-pressed="${x.deadline === v}">${DL[v]}</button>`).join('')}
+      </div>
+    </div>
+  </article>`;
+}
+function renderSubjects() {
+  $('#subjects').innerHTML = state.subjects.map(subjectHTML).join('');
+}
+
+/* ---------- render: routine / questions ---------- */
+function renderRoutine() {
+  const ul = $('#routine');
+  ul.innerHTML = state.routine.map(r => `
+    <li data-rid="${r.id}">
+      <span class="lbl">${esc(r.label)}</span>
+      <div class="seg" data-rseg role="group" aria-label="${esc(r.label)}">
+        <button type="button" data-v="done" aria-pressed="${r.state === 'done'}" aria-label="انجام شد">✓</button>
+        <button type="button" data-v="miss" aria-pressed="${r.state === 'miss'}" aria-label="انجام نشد">✗</button>
+      </div>
+      <button class="mini del" type="button" data-act="del-routine" aria-label="حذف ${esc(r.label)}">${ico.trash}</button>
+    </li>`).join('');
+}
+function renderQuestions() {
+  $('#qlist').innerHTML = state.questions.map((q, i) => `
+    <li data-qid="${q.id}">
+      <textarea data-qi rows="2" placeholder="سؤال ${toFa(i + 1)}" aria-label="سؤال ${toFa(i + 1)}">${esc(q.text)}</textarea>
+      <button class="mini del" type="button" data-act="del-q" aria-label="حذف سؤال">${ico.trash}</button>
+    </li>`).join('');
+}
+
+/* ---------- static fields ---------- */
+function fillStatic() {
+  $$('[data-f]').forEach(el => {
+    const k = el.dataset.f;
+    if (el.classList.contains('seg')) {
+      $$('button', el).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === state[k])));
+    } else if (el.type === 'checkbox') {
+      el.checked = !!state[k];
+    } else if (el.type === 'range') {
+      el.value = state[k] === '' ? 70 : state[k];
+      el.classList.toggle('unset', state[k] === '');
+    } else {
+      el.value = state[k] ?? '';
+    }
+  });
+}
+
+function renderTech() {
+  $('#techSlot').innerHTML = durHTML('data-f="techDur"', 'استفاده از تکنولوژی', state.techDur);
+}
+function buildAll() {
+  renderTech(); fillStatic(); renderSubjects(); renderRoutine(); renderQuestions(); updateAll();
+}
+
+/* ---------- derived UI ---------- */
+function hint(actual, planned, kind) {
+  const A = toMin(actual), P = toMin(planned);
+  if (A == null || P == null) return ['', ''];
+  let d = A - P;
+  if (d > 720) d -= 1440;
+  if (d < -720) d += 1440;
+  if (d === 0) return ['دقیقاً طبق برنامه', 'good'];
+  const t = toFa(fmtMin(Math.abs(d)));
+  if (kind === 'start') return d > 0 ? [`${t} دیرتر از برنامه شروع کردی`, 'late'] : [`${t} زودتر از برنامه شروع کردی`, 'good'];
+  return d > 0 ? [`${t} بیشتر از برنامه ادامه دادی`, 'good'] : [`${t} زودتر از برنامه تمام کردی`, 'late'];
+}
+function updateSubjectDerived(card) {
+  const x = state.subjects.find(s => s.id === card.dataset.sid);
+  if (!x) return;
+  const idx = state.subjects.indexOf(x);
+  $('[data-title]', card).textContent = x.name || 'درس ' + toFa(idx + 1);
+  const pct = $('[data-pct]', card);
+  const t = num(x.tests), c = num(x.correct);
+  pct.classList.remove('warn');
+  if (String(x.correct).trim() !== '' && c > t) { pct.textContent = 'بیشتر از کل تست'; pct.classList.add('warn'); }
+  else if (t > 0 && String(x.correct).trim() !== '') pct.textContent = `${toFa(Math.round(c / t * 100))}٪ درست`;
+  else pct.textContent = '';
+}
+function fillCount() {
+  const f = [];
+  ['wake','start','pStart','end','pEnd'].forEach(k => f.push(!!state[k]));
+  state.subjects.forEach(s => {
+    ['name','topic','tests','source','deadline'].forEach(k => f.push(String(s[k]).trim() !== ''));
+    f.push(hasV(s.dur));
+  });
+  f.push(hasV(state.techDur));
+  ['deadline','weak','quality','exam'].forEach(k => f.push(String(state[k]).trim() !== ''));
+  return [f.filter(Boolean).length, f.length];
+}
+function renderDerived() {
+  const [wd, dt] = dateParts(state.dateISO);
+  $('#dateWeek').textContent = wd;
+  $('#dateTitle').textContent = dt;
+  $('#todayBtn').hidden = state.dateISO === todayISO();
+  const [a, b] = fillCount();
+  $('#progText').textContent = `${toFa(a)} از ${toFa(b)}`;
+  const pc = b ? Math.round(a / b * 100) : 0;
+  $('#progBar').style.width = pc + '%';
+  $('#progPct').textContent = toFa(pc) + '٪';
+
+  const [t1, c1] = hint(state.start, state.pStart, 'start');
+  const [t2, c2] = hint(state.end, state.pEnd, 'end');
+  const hs = $('#hintStart'), he = $('#hintEnd');
+  hs.textContent = t1; hs.className = 'hint ' + c1;
+  he.textContent = t2; he.className = 'hint ' + c2;
+
+  $$('.subj').forEach(updateSubjectDerived);
+
+  $$('.dur').forEach(el => {
+    const inp = $('input', el), min = num(inp.value);
+    const rd = $('.dur-read', el);
+    rd.classList.remove('warn');
+    if (min > 960) { rd.textContent = `${toFa(fmtMin(min))} — مطمئنی؟`; rd.classList.add('warn'); }
+    else rd.textContent = min >= 60 ? `یعنی ${toFa(fmtMin(min))}` : '';
+  });
+
+  const totalMin = state.subjects.reduce((s, x) => s + num(x.dur), 0);
+  const totalTests = sumTests(state);
+  $('#stStudy').textContent = totalMin > 0 ? toFa(fmtMin(totalMin)) : '—';
+  $('#wkToday').textContent = toFa(totalTests);
+  const prevEmpty = String(state.weekPrev).trim() === '';
+  const wk = (!prevEmpty || totalTests > 0) ? num(state.weekPrev) + totalTests : null;
+  $('#stWeek').textContent = wk == null ? '—' : toFa(wk);
+  let note;
+  if (state.weekSrc === 'carry') note = 'از روزهای قبلِ این هفته خودکار جمع شد ✓';
+  else if (prevEmpty && weekStart(state.dateISO) === state.dateISO) note = 'اول هفته است؛ از صفر شروع می‌شود و از فردا خودکار منتقل می‌شود.';
+  else if (prevEmpty) note = 'اگر این هفته قبلاً تست زده‌ای تعدادش را بنویس. از فردا خودکار جمع می‌شود.';
+  else note = 'از فردا همین عدد با تست امروز خودکار منتقل می‌شود.';
+  $('#weekNote').textContent = note;
+  $('#qv').textContent = state.quality === '' ? '—' : toFa(state.quality) + '٪';
+}
+function renderOut() {
+  const text = buildReport();
+  $('#out').textContent = text;
+  $('#outMeta').textContent = `${toFa(text.length)} نویسه`;
+  return text;
+}
+function updateAll() { save(); renderOut(); renderDerived(); }
+
+/* ---------- toast / clipboard ---------- */
+let toastT;
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2200);
+}
+async function copyText(text) {
+  try { await navigator.clipboard.writeText(text); return true; } catch {}
+  const ta = document.createElement('textarea');
+  ta.value = text; ta.setAttribute('readonly', ''); ta.style.cssText = 'position:fixed;opacity:0;top:0';
+  document.body.appendChild(ta); ta.select();
+  let ok = false;
+  try { ok = document.execCommand('copy'); } catch {}
+  ta.remove();
+  return ok;
+}
+
+/* ---------- events: input ---------- */
+document.addEventListener('input', e => {
+  const el = e.target;
+  if (el.hasAttribute('data-num')) {
+    let clean = norm(el.value).replace(/\D/g, '').slice(0, 4);
+    if (el.dataset.max && +clean > +el.dataset.max) clean = el.dataset.max;
+    if (clean !== el.value) el.value = clean;
+  }
+  if (el.dataset.f) {
+    const k = el.dataset.f;
+    if (el.type === 'checkbox') state[k] = el.checked;
+    else if (el.type === 'range') { state[k] = el.value; el.classList.remove('unset'); }
+    else state[k] = el.value;
+    if (k === 'weekPrev') state.weekSrc = 'manual';
+  } else if (el.dataset.sk) {
+    const card = el.closest('[data-sid]');
+    const x = state.subjects.find(s => s.id === card.dataset.sid);
+    if (x) x[el.dataset.sk] = el.value;
+  } else if (el.hasAttribute('data-qi')) {
+    const q = state.questions.find(q => q.id === el.closest('[data-qid]').dataset.qid);
+    if (q) q.text = el.value;
+  } else return;
+  updateAll();
+});
+document.addEventListener('change', e => {
+  if (e.target.type === 'checkbox' && e.target.dataset.f) { state[e.target.dataset.f] = e.target.checked; updateAll(); }
+});
+
+/* ---------- events: click ---------- */
+let resetArmed = false, resetT;
+function disarmReset() {
+  resetArmed = false; clearTimeout(resetT);
+  $$('[data-act=reset]').forEach(b => { b.textContent = 'ریست فرم'; b.classList.remove('danger'); });
+}
+function addRoutine(label) {
+  label = label.trim();
+  if (!label) return;
+  if (state.routine.some(r => r.label === label)) { toast('این مورد قبلاً اضافه شده'); return; }
+  state.routine.push({ id: uid(), label, state: '' });
+  renderRoutine(); updateAll();
+}
+
+document.addEventListener('click', e => {
+  // segmented controls
+  const sb = e.target.closest('.seg button');
+  if (sb) {
+    const seg = sb.parentElement, v = sb.dataset.v;
+    let cur;
+    if (seg.dataset.sk) {
+      const card = seg.closest('[data-sid]');
+      const x = state.subjects.find(s => s.id === card.dataset.sid);
+      x.deadline = x.deadline === v ? '' : v; cur = x.deadline; card.dataset.dl = cur;
+    } else if (seg.dataset.f) {
+      state[seg.dataset.f] = state[seg.dataset.f] === v ? '' : v; cur = state[seg.dataset.f];
+    } else if (seg.hasAttribute('data-rseg')) {
+      const r = state.routine.find(r => r.id === seg.closest('[data-rid]').dataset.rid);
+      r.state = r.state === v ? '' : v; cur = r.state;
+    } else return;
+    $$('button', seg).forEach(b => b.setAttribute('aria-pressed', String(b.dataset.v === cur)));
+    updateAll();
+    return;
+  }
+
+  const btn = e.target.closest('[data-act]');
+  if (!btn) return;
+  const act = btn.dataset.act;
+  if (act !== 'reset') disarmReset();
+
+  switch (act) {
+    case 'day-prev': state.dateISO = addDays(state.dateISO, -1); updateAll(); break;
+    case 'day-next': state.dateISO = addDays(state.dateISO, 1); updateAll(); break;
+    case 'day-today': state.dateISO = todayISO(); updateAll(); break;
+
+    case 'add-subj': {
+      const s = newSubject(); state.subjects.push(s); renderSubjects(); updateAll();
+      const card = $(`[data-sid="${s.id}"]`); card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('[data-sk=name]', card).focus({ preventScroll: true });
+      break;
+    }
+    case 'dup-subj': {
+      const id = btn.closest('[data-sid]').dataset.sid;
+      const src = state.subjects.find(s => s.id === id);
+      const s = newSubject({ name: src.name, source: src.source });
+      state.subjects.splice(state.subjects.indexOf(src) + 1, 0, s);
+      renderSubjects(); updateAll();
+      const card = $(`[data-sid="${s.id}"]`); card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      $('[data-sk=topic]', card).focus({ preventScroll: true });
+      break;
+    }
+    case 'del-subj': {
+      const id = btn.closest('[data-sid]').dataset.sid;
+      if (state.subjects.length === 1) state.subjects = [newSubject()];
+      else state.subjects = state.subjects.filter(s => s.id !== id);
+      renderSubjects(); updateAll();
+      break;
+    }
+
+    case 'dur-add': case 'dur-clear': {
+      const inp = $('input', btn.closest('.dur'));
+      inp.value = act === 'dur-clear' ? '' : String(Math.min(1440, num(inp.value) + num(btn.dataset.min)));
+      inp.dispatchEvent(new Event('input', { bubbles: true }));
+      break;
+    }
+
+    case 'add-routine': { const i = $('#rtNew'); addRoutine(i.value); i.value = ''; i.focus(); break; }
+    case 'del-routine':
+      state.routine = state.routine.filter(r => r.id !== btn.closest('[data-rid]').dataset.rid);
+      renderRoutine(); updateAll(); break;
+
+    case 'add-q': {
+      const q = { id: uid(), text: '' }; state.questions.push(q); renderQuestions(); updateAll();
+      $(`[data-qid="${q.id}"] textarea`).focus();
+      break;
+    }
+    case 'del-q':
+      state.questions = state.questions.filter(q => q.id !== btn.closest('[data-qid]').dataset.qid);
+      renderQuestions(); updateAll(); break;
+
+    case 'copy': copyText(renderOut()).then(ok => toast(ok ? 'گزارش کپی شد ✓' : 'کپی نشد؛ متن را دستی انتخاب کن')); break;
+    case 'share': navigator.share({ text: renderOut() }).catch(() => {}); break;
+
+    case 'tab':
+      document.body.dataset.view = btn.dataset.view;
+      $$('.tab').forEach(t => t.setAttribute('aria-selected', String(t === btn)));
+      window.scrollTo({ top: 0 });
+      break;
+
+    case 'reset':
+      if (!resetArmed) {
+        resetArmed = true;
+        $$('[data-act=reset]').forEach(b => { b.textContent = 'مطمئنی؟ دوباره بزن تا پاک شود'; b.classList.add('danger'); });
+        resetT = setTimeout(disarmReset, 3500);
+      } else {
+        disarmReset();
+        const routine = state.routine.map(r => ({ ...r, state: '' }));
+        state = { ...freshState(routine), fa: state.fa, dateISO: state.dateISO, weekPrev: state.weekPrev, weekSrc: state.weekSrc };
+        buildAll(); toast('فرم پاک شد؛ لیست روتین حفظ شد');
+      }
+      break;
+  }
+});
+
+$('#rtNew').addEventListener('keydown', e => {
+  if (e.key === 'Enter') { e.preventDefault(); addRoutine(e.target.value); e.target.value = ''; }
+});
+
+/* ---------- init ---------- */
+document.addEventListener('visibilitychange', () => { if (!document.hidden) renderDerived(); });
+
+if (navigator.share) $('#shareBtn').hidden = false;
+buildAll();
+if (carryNotice) setTimeout(() => toast('جمع تست‌های هفته از روز قبل منتقل شد'), 400);
+})();
+</script>
+</body>
+</html>
